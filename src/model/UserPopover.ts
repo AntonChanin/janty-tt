@@ -7,7 +7,7 @@ import { default as OpenLayerMap } from  'ol/Map';
 import { OpenLayerPopoverOptions } from '../types/userPopover';
 
 class UserPopover {
-  popover:  Popover | null = null;
+  self:  Popover | null = null;
 
   popupSocket: HTMLElement | null = document.getElementById('popup');
 
@@ -17,11 +17,11 @@ class UserPopover {
   }
 
   makePopover(element: HTMLElement, hdms: string) {
-    this.popover = Popover.getInstance(element);
-    if (this.popover) {
-      this.popover.dispose();
+    this.self = Popover.getInstance(element);
+    if (this.self) {
+      this.self.dispose();
     }
-    this.popover = new Popover(element, {
+    this.self = new Popover(element, {
       animation: false,
       container: element,
       content: '<p>The location you clicked was:</p><code>' + hdms + '</code>',
@@ -30,7 +30,7 @@ class UserPopover {
       title: 'Welcome to OpenLayers',
       customClass: 'bg-zinc-50 w-max p-2 shadow-md',
     });
-    this.popover.show();
+    this.self.show();
   }
   
   addPopoverListener(userMap: OpenLayerMap, popup: Overlay, element: HTMLElement) {

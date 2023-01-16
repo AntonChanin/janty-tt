@@ -1,5 +1,5 @@
 type OpenLayerPopoverOptions = {
-    popupSocket: HTMLElement | null;
+  popupSocket: HTMLElement | null;
 };
 
 export type { OpenLayerPopoverOptions };
