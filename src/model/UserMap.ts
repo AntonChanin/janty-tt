@@ -4,20 +4,31 @@ import OSM from 'ol/source/OSM';
 import ZoomSlider from 'ol/control/ZoomSlider';
 import { default as OpenLayerMap } from  'ol/Map';
 
-class UserMap {
-    viewOptions = {
-      center: [0, 0],
-      zoom: 2
-    };
+import { OpenLayerMapLayers, OpenLayerMapOptions, OpenLayerMapViewOptions } from '../types/userMap';
 
-    layers = [{
-      source: new OSM()
-    }];
+class UserMap {
+    viewOptions: OpenLayerMapViewOptions;
+
+    layers: OpenLayerMapLayers;
 
     self?: OpenLayerMap;
 
-    constructor(options: {}) {
-        
+    readonly presset: OpenLayerMapOptions = {
+      viewOptions: {
+        center: [0, 0],
+        zoom: 2
+      },
+      layers: [{
+        source: new OSM()
+      }]
+    }
+
+    constructor(options: Partial<OpenLayerMapOptions>) {
+      const { viewOptions, layers } = options;
+      const { viewOptions: viewOptionsDefault, layers: layersDefault } = this.presset;
+
+      this.viewOptions = viewOptions ?? viewOptionsDefault;
+      this.layers = layers ?? layersDefault;
     }
 
   private createLayers() {
