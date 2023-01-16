@@ -1,7 +1,7 @@
 import { FC, useRef } from 'react';
+import { observer } from 'mobx-react-lite';
 
 import useOpenLayerPopover from '../hooks/useOpenLayerPopover';
-import { observer } from 'mobx-react-lite';
 
 const PopoverView: FC = () => {
   const parent = useRef<HTMLDivElement | null>(null);

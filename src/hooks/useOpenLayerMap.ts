@@ -15,7 +15,7 @@ const useOpenLayerMap = (props: Props) => {
       const map = new UserMap({}).createMap().createZoomSlider();
       callback?.(map);
     };
-  }, [])
+  }, []);
 }
 
 export default useOpenLayerMap;
