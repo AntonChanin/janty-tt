@@ -1,13 +1,13 @@
 import MapView from './components/MapView';
-import './App.css'
-import './style.css';
+import PopoverView from './components/PopoverView';
+import './App.css';
 
 function App() {
 
   return (
     <div className="App font-sans">
       <MapView />
-      <div id="popup"></div>
+      <PopoverView />
     </div>
   )
 };

@@ -1,12 +1,14 @@
 import { FC, useRef } from 'react';
+import { observer } from 'mobx-react-lite';
 
+import MapStoreInstance from '../store';
 import useOpenLayerMap from '../hooks/useOpenLayerMap';
 
 const MapView: FC = () => {
-  const socket = useRef<HTMLDivElement | null>(null);
-  useOpenLayerMap({ socket });
+  const parent = useRef<HTMLDivElement | null>(null);
+  useOpenLayerMap({ parent, callback: (map) => MapStoreInstance.self = map });
 
-  return <div id="map" ref={socket}></div>
+  return <div id="map" ref={parent}></div>
 };
 
-export default MapView;
+export default observer(MapView);
