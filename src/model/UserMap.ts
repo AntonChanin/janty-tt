@@ -30,7 +30,6 @@ class UserMap {
 
   createZoomSlider() {
     this.self?.addControl(new ZoomSlider());
-
     return this;
   };
 
