@@ -11,10 +11,16 @@ type Props = {
 const useOpenLayerPopover = (props: Props) => {
     const { parent, callback, dependency = [] } = props;
     const [HDMS, setHDMS] = useState('');
+    const [popover, setPopover] = useState<UserPopover | null>(null);
  
     useEffect(() => {
       if (parent.current) {
-        const popover = new UserPopover({ root: parent.current });
+        setPopover(new UserPopover({ root: parent.current }))
+      }
+    }, [])
+
+    useEffect(() => {
+      if (popover) {
         popover.callback = {
           ...popover.callback,
           'click': (props) => {

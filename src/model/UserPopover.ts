@@ -1,4 +1,3 @@
-import { Popover } from 'bootstrap';
 import { toStringHDMS } from 'ol/coordinate';
 import Overlay from 'ol/Overlay';
 import { toLonLat } from 'ol/proj';
@@ -7,6 +6,8 @@ import { default as OpenLayerMap } from  'ol/Map';
 import { OpenLayerPopoverOptions } from '../types/userPopover';
 
 class UserPopover {
+  self: Overlay = new Overlay({});
+
   hdms = '';
 
   root: HTMLElement | null = document.getElementById('popup');
@@ -31,13 +32,11 @@ class UserPopover {
   }
 
   createPopover(userMap: OpenLayerMap) {
-    if (this.root) {  
-      const popup = new Overlay({
-        element: this.root,
-      });
-      userMap.addOverlay(popup);
-      this.addPopoverListener(userMap, popup);
+    if (this.root && !this.self.getElement()) {  
+      this.self.setElement(this.root);
+      userMap.addOverlay(this.self);
     }
+    this.addPopoverListener(userMap, this.self);
     return this;
   } 
 };
