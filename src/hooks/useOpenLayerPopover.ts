@@ -1,27 +1,33 @@
-import Overlay from 'ol/Overlay';
-import { Popover } from 'bootstrap';
-import { useEffect } from 'react';
-import { toStringHDMS } from 'ol/coordinate';
-import { toLonLat } from 'ol/proj';
-
-import MapStoreInstance from '../store';
+import { useEffect, useState } from 'react';
 import UserPopover from '../model/UserPopover';
+
 
 type Props = {
   parent: React.MutableRefObject<HTMLDivElement | null>;
+  callback?(value: UserPopover): void;
+  dependency?: any[];
 }
 
 const useOpenLayerPopover = (props: Props) => {
-    const { parent } = props;
-    const { self } = MapStoreInstance;
-    
+    const { parent, callback, dependency = [] } = props;
+    const [HDMS, setHDMS] = useState('');
+ 
     useEffect(() => {
-      self?.__proto__ &&
-        new UserPopover({ popupSocket: parent.current })
-          .createPopover(self.__proto__);
-    }, [self?.__proto__]);
+      if (parent.current) {
+        const popover = new UserPopover({ root: parent.current });
+        popover.callback = {
+          ...popover.callback,
+          'click': (props) => {
+            const { hdms } = props;
+            setHDMS(hdms);
+          },
+        }
+        callback?.(popover);
+      };
+      
+    }, [...dependency]);
 
-    return;
+    return HDMS;
 };
 
 export default useOpenLayerPopover;

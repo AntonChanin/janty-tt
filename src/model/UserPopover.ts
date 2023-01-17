@@ -7,53 +7,38 @@ import { default as OpenLayerMap } from  'ol/Map';
 import { OpenLayerPopoverOptions } from '../types/userPopover';
 
 class UserPopover {
-  self:  Popover | null = null;
+  hdms = '';
 
-  popupSocket: HTMLElement | null = document.getElementById('popup');
+  root: HTMLElement | null = document.getElementById('popup');
 
-  constructor(options: OpenLayerPopoverOptions) {
-      const { popupSocket } = options;
-      this.popupSocket = popupSocket;
+  callback: Record<string, (props: any) => void> = {};
+
+  constructor(options: Partial<OpenLayerPopoverOptions>) {
+    const { root } = options;
+    if (root) {
+      this.root = root;
+    };
   }
 
-  makePopover(element: HTMLElement, hdms: string) {
-    this.self = Popover.getInstance(element);
-    if (this.self) {
-      this.self.dispose();
-    }
-    this.self = new Popover(element, {
-      animation: false,
-      container: element,
-      content: '<p>The location you clicked was:</p><code>' + hdms + '</code>',
-      html: true,
-      placement: 'top',
-      title: 'Welcome to OpenLayers',
-      customClass: 'bg-zinc-50 w-max p-2 shadow-md',
-    });
-    this.self.show();
-  }
   
-  addPopoverListener(userMap: OpenLayerMap, popup: Overlay, element: HTMLElement) {
+  addPopoverListener(userMap: OpenLayerMap, popup: Overlay) {
     userMap.on('click', (evt) => {
       const coordinate = evt.coordinate;
-      const hdms = toStringHDMS(toLonLat(coordinate));
+      this.hdms = toStringHDMS(toLonLat(coordinate));
       popup.setPosition(coordinate);
-      this.makePopover(element, hdms)
+      this.callback['click']({ coordinate, hdms: this.hdms })
     });
   }
 
   createPopover(userMap: OpenLayerMap) {
-    if (this.popupSocket && self) {  
+    if (this.root) {  
       const popup = new Overlay({
-        element: this.popupSocket,
+        element: this.root,
       });
-        
       userMap.addOverlay(popup);
-      const element = popup.getElement();
-      if (element) {
-        this.addPopoverListener(userMap, popup, element);
-      }
+      this.addPopoverListener(userMap, popup);
     }
+    return this;
   } 
 };
 
