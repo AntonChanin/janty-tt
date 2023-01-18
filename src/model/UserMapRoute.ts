@@ -1,17 +1,18 @@
 import Point from 'ol/geom/Point';
 import Feature from 'ol/Feature';
-import VectorLayer from 'ol/layer/Vector';
-import Vector from 'ol/source/Vector';
-import { Polyline } from 'ol/format';
-import {Fill, Icon, Stroke, Style } from 'ol/style';
-import { default as OpenLayerMap } from  'ol/Map';
-import CircleStyle from 'ol/style/Circle';
-import VectorSource from 'ol/source/Vector';
-import { StyleFunction } from 'ol/style/Style';
-
-import { UserMapRouteProps } from '../types/userMapRoute';
 import LineString from 'ol/geom/LineString';
 import Geometry from 'ol/geom/Geometry';
+import VectorLayer from 'ol/layer/Vector';
+import Vector from 'ol/source/Vector';
+import CircleStyle from 'ol/style/Circle';
+import { Polyline } from 'ol/format';
+import {Fill, Icon, Stroke, Style } from 'ol/style';
+import { StyleFunction } from 'ol/style/Style';
+import { default as OpenLayerMap } from  'ol/Map';
+
+
+import { UserMapRouteProps } from '../types/userMapRoute';
+
 
 class UserMapRoute {
 
@@ -37,7 +38,7 @@ class UserMapRoute {
       }),
     }),
   });
-  readonly sourceDefault = new VectorSource({ features: [] });
+  readonly sourceDefault = new Vector({ features: [] });
 
   styles = {
     'route': this.routeStyleDefault,
