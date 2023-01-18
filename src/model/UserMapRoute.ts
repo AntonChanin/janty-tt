@@ -15,61 +15,47 @@ import Geometry from 'ol/geom/Geometry';
 
 class UserMapRoute {
 
-  styles = {
-    'route': new Style({
+  readonly routeStyleDefault = new Style({
+    stroke: new Stroke({
+      width: 2,
+      color:  [237, 212, 0, 0.8],
+    }),
+  });
+  readonly iconStyleDefault = new Style({
+    image: new Icon({
+      anchor: [0.5, 1],
+      src: 'data/icon.png',
+    }),
+  });
+  readonly geoMarkerStyleDefault = new Style({
+    image: new CircleStyle({
+      radius: 7,
+      fill: new Fill({color: 'black'}),
       stroke: new Stroke({
+        color: 'white',
         width: 2,
-        color:  [237, 212, 0, 0.8],
       }),
     }),
-    'icon': new Style({
-      image: new Icon({
-        anchor: [0.5, 1],
-        src: 'data/icon.png',
-      }),
-    }),
-    'geoMarker': new Style({
-      image: new CircleStyle({
-        radius: 7,
-        fill: new Fill({color: 'black'}),
-        stroke: new Stroke({
-          color: 'white',
-          width: 2,
-        }),
-      }),
-    }),
+  });
+  readonly sourceDefault = new VectorSource({ features: [] });
+
+  styles = {
+    'route': this.routeStyleDefault,
+    'icon': this.iconStyleDefault,
+    'geoMarker': this.geoMarkerStyleDefault,
   };
-  
   source = new Vector({
     format: new Polyline(),
     url: '',
   });
-
-  vectorLayer = new VectorLayer({
-    source: new VectorSource({
-      features: [],
-    }),
-  })
-  
+  vectorLayer = new VectorLayer({ source: this.sourceDefault })
   coord: number[][] = [];
-
-  polyline = new Polyline({
-    factor: 1e6
-  });
-
+  polyline = new Polyline({ factor: 1e6 });
   route = new Geometry();
 
-  private __routeFeature = new Feature({
-    type: 'route',
-  });
-
-  private __startMarker = new Feature({
-    type: 'icon',
-  });
-
-  private __endMarker = new Feature({
-    type: 'icon',
-  });
+  private __routeFeature = new Feature({ type: 'route' });
+  private __startMarker = new Feature({ type: 'icon' });
+  private __endMarker = new Feature({ type: 'icon' });
 
   constructor(options: Partial<UserMapRouteProps>) {
     const { url = '', color = '#000', width = 2 } = options;
@@ -89,10 +75,14 @@ class UserMapRoute {
   makeRoute() {
     this.route = new Polyline({
       factor: 1e6,
-    }).readGeometry(this.getLineStringFromCoord(this.coord), {
-      dataProjection: 'EPSG:4326',
-      featureProjection: 'EPSG:3857',
-    });
+    })
+      .readGeometry(
+        this.getLineStringFromCoord(this.coord),
+        {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857',
+        }
+      );
   }
 
   makeGeometry() {
