@@ -23,6 +23,8 @@ class UserMap {
 
   private self?: OpenLayerMap;
 
+  private default?: OpenLayerMap;
+
   constructor(options: Partial<OpenLayerMapOptions>) {
     const { viewOptions, layers } = options;
     const { viewOptions: viewOptionsDefault, layers: layersDefault } = this.presset;
@@ -43,6 +45,10 @@ class UserMap {
     return this.self;
   };
 
+  clear() {
+    this.self?.setLayers(this.createLayers());
+  }
+
   createZoomSlider() {
     this.self?.addControl(new ZoomSlider());
     return this;
@@ -53,7 +59,8 @@ class UserMap {
       target: 'map',
       layers: this.createLayers(),
       view: this.createView()
-    }); 
+    });
+    this.default = this.self;
 
     return this;
   };
