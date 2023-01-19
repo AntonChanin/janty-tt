@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 axios.defaults.baseURL = import.meta.env.VITE_AGRO_URL;
 
-const useAxios = (query: string) => {
+const useAxios = (query: string, dependency?: any[]) => {
   const [response, setResponse] = useState<Record<string, string | number>[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ const useAxios = (query: string) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [...(dependency ?? [])]);
 
   return { response, error, loading };
 };
