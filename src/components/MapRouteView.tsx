@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import MapStoreInstance from '../store';
 import UserMapRoute from '../model/UserMapRoute';
 import UserCheckbox from '../model/UserCheckbox';
-import UserCheckboxView from './UserCheckboxView';
+import CheckboxView from './CheckboxView';
 import useAxios from '../hooks/useAxios';
 import useOpenLayerRoute from '../hooks/useOpenLayerRoute';
 
@@ -49,7 +49,7 @@ const MapRouteView: FC = () => {
         ({ id, name }) => {
           const model = new UserCheckbox({ key: `${id}`, id: +id - 1 }).addCallback({ 'onClick': ({ id }) => setActivity(id),  });
           return (
-          <UserCheckboxView
+          <CheckboxView
             key={model.key}
             active={activity}
             model={model}

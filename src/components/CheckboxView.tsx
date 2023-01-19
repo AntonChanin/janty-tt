@@ -8,8 +8,9 @@ type Props = {
 }
 
 const MapRouteCheckbox: FC<PropsWithChildren<Props>> = ({ model, active, children }) => {
-  const { activity, updateActivity, id, onClick } = model;
-  updateActivity(active)
+  const { activity, id, updateActivity, onClick } = model;
+  updateActivity(active);
+
   const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
     onClick();
