@@ -3,17 +3,18 @@ import { observer } from 'mobx-react-lite';
 
 import MapStoreInstance from '../store';
 import UserMapRoute from '../model/UserMapRoute';
+import UserCheckbox from '../model/UserCheckbox';
+import UserCheckboxView from './UserCheckboxView';
 import useAxios from '../hooks/useAxios';
 import useOpenLayerRoute from '../hooks/useOpenLayerRoute';
-import MapRouteCheckbox from './MapRouteCheckbox';
-
 
 
 const MapRouteView: FC = () => {
   const parent = useRef<HTMLDivElement | null>(null);
   const [activity, setActivity] = useState<number>(0);
-  const { response, loading, error } = useAxios('GetRoutes');
+  const { response, loading } = useAxios('GetRoutes');
   const { mapRef, getRoute, setRoute } = MapStoreInstance;
+
   useOpenLayerRoute({
     parent,
     callback: () => {
@@ -39,8 +40,24 @@ const MapRouteView: FC = () => {
   });
 
   return (
-    <div id="mapRoute" ref={parent} className="flex flex-col w-1/4 max-w-[300px] items-start pl-2 pt-1">
-      {!loading && response.map(({ id, name }) => (<MapRouteCheckbox key={+id} routeName={`${name}`} name={activity === +id - 1 ? 'active' : ''} onClick={(event) => setActivity(+id - 1)} id={+id - 1}/>))}
+    <div
+      id="mapRoute"
+      className="flex flex-col w-1/4 max-w-[300px] items-start pl-2 pt-1"
+      ref={parent}
+    >
+      {!loading && response.map(
+        ({ id, name }) => {
+          const model = new UserCheckbox({ key: `${id}`, id: +id - 1 }).addCallback({ 'onClick': ({ id }) => setActivity(id),  });
+          return (
+          <UserCheckboxView
+            key={model.key}
+            active={activity}
+            model={model}
+            children={`${name}`}
+          />
+        )
+      }
+      )}
     </div>
   );
 };

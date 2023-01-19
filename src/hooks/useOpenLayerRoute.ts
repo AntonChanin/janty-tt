@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 type Props = {
   parent: React.MutableRefObject<HTMLDivElement | null>;

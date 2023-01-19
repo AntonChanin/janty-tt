@@ -23,8 +23,6 @@ class UserMap {
 
   private self?: OpenLayerMap;
 
-  private default?: OpenLayerMap;
-
   constructor(options: Partial<OpenLayerMapOptions>) {
     const { viewOptions, layers } = options;
     const { viewOptions: viewOptionsDefault, layers: layersDefault } = this.presset;
@@ -60,7 +58,6 @@ class UserMap {
       layers: this.createLayers(),
       view: this.createView()
     });
-    this.default = this.self;
 
     return this;
   };
