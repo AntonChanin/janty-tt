@@ -12,7 +12,6 @@ const useOpenLayerMap = (props: Props) => {
   const { parent, callback, dependency = [] } = props;
 
   useEffect(() => {
-    console.log(dependency);
     if (parent && !parent?.current?.childElementCount) {
       const map = new UserMap({}).createMap().createZoomSlider();
       callback?.(map);
