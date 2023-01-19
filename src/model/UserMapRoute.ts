@@ -12,6 +12,7 @@ import { default as OpenLayerMap } from  'ol/Map';
 
 
 import { UserMapRouteProps } from '../types/userMapRoute';
+import UserMap from './UserMap';
 
 
 class UserMapRoute {
@@ -65,12 +66,16 @@ class UserMapRoute {
     this.styles.route.getStroke().setWidth(width);
   }
 
+  removeLayer(userMap: OpenLayerMap) {
+    userMap.removeLayer(this.vectorLayer);
+  }
+
   getLineStringFromCoord(coord: number[][]): string {
     return this.polyline.writeGeometry(new LineString(coord))
   }
 
-  getCoordFromResult(result: any[]) {
-    this.coord = result.map((point: any) => ([point.lon, point.lat]));
+  getCoordFromData(data: any[]) {
+    this.coord = data.map((point: any) => ([point.lon, point.lat]));
   }
 
   makeRoute() {
@@ -108,19 +113,24 @@ class UserMapRoute {
       );
   }
 
-  createMapRoute(userMap: OpenLayerMap) {
-    
+  featchMapRoute(userMap: UserMap) {
     fetch(this.source.getUrl() as string).then((response) => {
-      response.json().then((result) => {
-        this.getCoordFromResult(result);
-        this.makeRoute();
-        this.makeGeometry();
-        this.initVectorLayer();
-        userMap.addLayer(this.vectorLayer);
-        
-        return this;
+      response.json().then((data) => {
+        this.createMapRoute(userMap, data)
       })
     });
+    return this;
+  }
+
+  createMapRoute(userMap: UserMap, data: any) {
+    this.getCoordFromData(data);
+    this.makeRoute();
+    this.makeGeometry();
+    this.initVectorLayer();
+    userMap.clear();
+    userMap.__proto__?.addLayer(this.vectorLayer);
+    
+    return this;
   }
 
 }

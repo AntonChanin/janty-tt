@@ -23,7 +23,7 @@ const PopoverView: FC = () => {
 
   const handleClose: React.MouseEventHandler<HTMLButtonElement>  = (event) => {
     event.preventDefault();
-    setVisibility('hidden')
+    setVisibility('hidden');
   };
 
   return (

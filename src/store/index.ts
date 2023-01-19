@@ -1,6 +1,7 @@
 import { action, makeObservable, observable } from 'mobx';
 
 import UserMap from '../model/UserMap';
+import UserMapRoute from '../model/UserMapRoute';
 import UserPopover from '../model/UserPopover';
 
 class UserMapStore {
@@ -8,11 +9,15 @@ class UserMapStore {
 
   private popoverRef?: UserPopover;
 
+  private routeRef?: UserMapRoute;
+
   constructor() {
     makeObservable(this, {
       mapRef: observable,
       getPopover: action.bound,
       setPopover: action.bound,
+      getRoute: action.bound,
+      setRoute: action.bound,
     });
   };
 
@@ -22,6 +27,14 @@ class UserMapStore {
 
   setPopover(popover: UserPopover) {
     this.popoverRef = popover;
+  }
+  
+  setRoute(route: UserMapRoute) {
+    this.routeRef = route;
+  }
+
+  getRoute() {
+    return this.routeRef;
   }
 
 }
