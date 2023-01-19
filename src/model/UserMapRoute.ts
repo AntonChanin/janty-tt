@@ -10,10 +10,9 @@ import {Fill, Icon, Stroke, Style } from 'ol/style';
 import { StyleFunction } from 'ol/style/Style';
 import { default as OpenLayerMap } from  'ol/Map';
 
-
-import { UserMapRouteProps } from '../types/userMapRoute';
 import UserMap from './UserMap';
-
+import { UserMapRouteProps } from '../types/userMapRoute';
+import UserMapPoint from './UserMapPoint';
 
 class UserMapRoute {
 
@@ -40,50 +39,57 @@ class UserMapRoute {
     }),
   });
   readonly sourceDefault = new Vector({ features: [] });
+  
+  private __source = new Vector({
+    format: new Polyline(),
+    url: '',
+  });
+  private __layer = new VectorLayer({ source: this.sourceDefault })
+  private __polyline = new Polyline({ factor: 1e6 });
+  private __route = new Geometry();
+  private __routeFeature = new Feature({ type: 'route' });
+  private __startMarker = new Feature({ type: 'icon' });
+  private __endMarker = new Feature({ type: 'icon' });
 
   styles = {
     'route': this.routeStyleDefault,
     'icon': this.iconStyleDefault,
     'geoMarker': this.geoMarkerStyleDefault,
   };
-  source = new Vector({
-    format: new Polyline(),
-    url: '',
-  });
-  vectorLayer = new VectorLayer({ source: this.sourceDefault })
   coord: number[][] = [];
-  polyline = new Polyline({ factor: 1e6 });
-  route = new Geometry();
-
-  private __routeFeature = new Feature({ type: 'route' });
-  private __startMarker = new Feature({ type: 'icon' });
-  private __endMarker = new Feature({ type: 'icon' });
-
+  
   constructor(options: Partial<UserMapRouteProps>) {
     const { url = '', color = '#000', width = 2 } = options;
-    this.source.setUrl(url);
+    this.__source.setUrl(url);
     this.styles.route.getStroke().setColor(color);
     this.styles.route.getStroke().setWidth(width);
   }
 
   removeLayer(userMap: OpenLayerMap) {
-    userMap.removeLayer(this.vectorLayer);
-  }
-
-  getLineStringFromCoord(coord: number[][]): string {
-    return this.polyline.writeGeometry(new LineString(coord))
+    userMap.removeLayer(this.__layer);
   }
 
   getCoordFromData(data: any[]) {
     this.coord = data.map((point: any) => ([point.lon, point.lat]));
   }
+  
+  private __writeGeometryFromCoord(coord: number[][]): string {
+    return this.__polyline.writeGeometry(new LineString(coord))
+  }
 
-  makeRoute() {
-    this.route = new Polyline({
+  private __makePointsFromCoord(coord: number[][], userMap: OpenLayerMap) {
+    coord.map((point) => {
+      new UserMapPoint({ coord: point, color: this.styles.route.getStroke().getColor() ?? '#000000' }).createMapPoint(userMap);
+      return point
+    })
+  }
+
+  private __makeRoute() {
+    this.__route = new Polyline({
       factor: 1e6,
     })
       .readGeometry(
-        this.getLineStringFromCoord(this.coord),
+        this.__writeGeometryFromCoord(this.coord),
         {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857',
@@ -91,30 +97,30 @@ class UserMapRoute {
       );
   }
 
-  makeGeometry() {
-    this.__routeFeature.setGeometry(this.route);
-    this.__startMarker.setGeometry(new Point((this.route as any).getFirstCoordinate()));
-    this.__endMarker.setGeometry(new Point((this.route as any).getLastCoordinate()));
+  private __makeGeometry() {
+    this.__routeFeature.setGeometry(this.__route);
+    this.__startMarker.setGeometry(new Point((this.__route as any).getFirstCoordinate()));
+    this.__endMarker.setGeometry(new Point((this.__route as any).getLastCoordinate()));
   }
 
-  initVectorLayer() {
-    this.vectorLayer
+  private __makeLayer() {
+    this.__layer
       .getSource()
       ?.addFeatures([this.__routeFeature, this.__startMarker, this.__endMarker]);
-    this.vectorLayer
+    this.__layer
       .setStyle((feature) => (
         this.styles[feature.get('type') as 'route' | 'icon' | 'geoMarker']
       ));
-    this.vectorLayer
+    this.__layer
       .getSource()
       ?.getFeatures()
       .forEach((feature, index) => (
-        feature.setStyle((this.vectorLayer.getStyle() as StyleFunction)(feature, index) ?? undefined))
+        feature.setStyle((this.__layer.getStyle() as StyleFunction)(feature, index) ?? undefined))
       );
   }
 
   featchMapRoute(userMap: UserMap) {
-    fetch(this.source.getUrl() as string).then((response) => {
+    fetch(this.__source.getUrl() as string).then((response) => {
       response.json().then((data) => {
         this.createMapRoute(userMap, data)
       })
@@ -124,12 +130,12 @@ class UserMapRoute {
 
   createMapRoute(userMap: UserMap, data: any) {
     this.getCoordFromData(data);
-    this.makeRoute();
-    this.makeGeometry();
-    this.initVectorLayer();
+    this.__makeRoute();
+    this.__makeGeometry();
+    this.__makeLayer();
     userMap.clear();
-    userMap.__proto__?.addLayer(this.vectorLayer);
-    
+    userMap.__proto__?.addLayer(this.__layer);
+    userMap.__proto__ && this.coord.length && this.__makePointsFromCoord(this.coord, userMap.__proto__)
     return this;
   }
 

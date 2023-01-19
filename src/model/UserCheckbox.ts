@@ -1,48 +1,44 @@
-import { MapCkeckboxProps } from "../types/userCheckbox";
+import { MapCkeckboxProps } from '../types/userCheckbox';
 
 class MapCheckbox {
+  private __callbacks: Record<string, (props: any) => void> = {
+    'changeActivity': ({ activity }) => this.activity = activity === this.id ?  'active' : '',
+  };
+  private __callbackNames: string[] = [];
 
-    activity: string = '';
+  activity: string = '';
+  id: string | number = 0;
+  key = '0';
 
-    id: string | number = 0;
-
-    key = '0';
-    
-    private __callbacks: Record<string, (props: any) => void> = {
-        'changeActivity': ({ activity }) => this.activity = activity === this.id ?  'active' : '',
+  constructor(options: Partial<MapCkeckboxProps>) {
+    const { activity, id, key } = options;
+    if (activity) {
+      this.activity = activity;
     };
-
-    private __callbackNames: string[] = [];
-
-    constructor(options: Partial<MapCkeckboxProps>) {
-        const { activity, id, key } = options;
-        if (activity) {
-            this.activity = activity;
-        };
-        if (id) {
-            this.id = id;
-        }
-        if (key) {
-            this.key = key;
-        }
+    if (id) {
+      this.id = id;
     }
-
-    addCallback(newCallback: Record<string, (props: any) => void>) {
-        this.__callbacks = {
-            ...this.__callbacks,
-            ...newCallback,
-        };
-        this.__callbackNames = Object.keys(this.__callbacks);
-        return this;
+    if (key) {
+      this.key = key;
     }
+  }
 
-    updateActivity = (newActivity?: number) => {
-        this.__callbacks[this.__callbackNames.filter((name) => name === 'changeActivity')[0]]({ activity: newActivity });
-    }
+  addCallback(newCallback: Record<string, (props: any) => void>) {
+    this.__callbacks = {
+      ...this.__callbacks,
+      ...newCallback,
+    };
+    this.__callbackNames = Object.keys(this.__callbacks);
+    return this;
+  }
 
-    onClick = () => {
-        return this.__callbacks[this.__callbackNames.filter((name) => name === 'onClick')[0]]({ id: this.id });
-    }
+  updateActivity = (newActivity?: number) => {
+    this.__callbacks[this.__callbackNames.filter((name) => name === 'changeActivity')[0]]({ activity: newActivity });
+  }
+
+  onClick = () => {
+    return this.__callbacks[this.__callbackNames.filter((name) => name === 'onClick')[0]]({ id: this.id });
+  }
 }
 
 export default MapCheckbox;
